@@ -1,0 +1,21 @@
+{
+    "quiz": [{
+      "dateStart": "2021-02-01",
+      "dateEnd": "2021-02-01 20:30",
+      "isStarted": true,
+      "isComplete": false,
+      "pathVideo": "https://github.com/GeoGuess/geoquiz/actions",
+      "choices": [
+        "Brazil",
+        "Jordan",
+        "Pakistan",
+        "Malaisia"
+      ],
+      "rightChoice": 2, 
+      "answers":{
+        "Bilib": 3,
+        "Dimoush": 2
+      }
+    }
+    ]
+  }
