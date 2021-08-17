@@ -40,6 +40,30 @@ const notifyDiscordChannel = new DiscordChannel(
 
 const logChannel = new DiscordChannel(process.env.DISCORD_LOG_CHANNEL_ID);
 
+async function getUsers(ids, message) {
+  const promises = await Promise.all(
+    ids.map((userId) => {
+      return new Promise(async (resolve) => {
+        if (message.channel.guild.members.cache.has(userId)) {
+          resolve(message.channel.guild.members.cache.get(userId));
+        } else {
+          console.log('User ' + userId + ' not found');
+          message.channel.guild.members
+            .fetch(userId)
+            .then((user) => {
+              resolve(user);
+            })
+            .catch(() => {
+              resolve(null);
+            });
+        }
+      });
+    })
+  );
+
+  return promises.filter((user) => user !== null);
+}
+
 setTimeout(() => {
   console.log('Logging in to discord...');
   discordClient
@@ -187,33 +211,23 @@ discordClient.on('message', async (message) => {
     message.content.startsWith('!end') &&
     message.member.hasPermission('ADMINISTRATOR')
   ) {
-    const congratUsers = await GeoQuiz.endQuestion();
+    const { congratUsers, percents } = await GeoQuiz.endQuestion();
 
     console.log('GeoQuiz.endQuestion');
-    if (congratUsers.length > 0) {
-      const users = [];
 
-      for (const userId of congratUsers) {
-        try {
-          if (message.channel.guild.members.cache.has(userId)) {
-            users.push(message.channel.guild.members.cache.get(userId));
-          } else {
-            console.log('User ' + userId + ' not found');
-            let user = await message.channel.guild.members.fetch(userId);
-            users.push(user);
-          }
-        } catch (e) {
-          console.log(e);
-        }
-      }
+    if (congratUsers.length > 0) {
+      const users = await getUsers(congratUsers, message);
 
       message.channel.send(
-        'Congratulations to ' +
+        Object.keys(percents)
+          .map((k) => `${k} : ${percents[k]}%`)
+          .join('\n') +
+          '\nCongratulations to ' +
           users.join(', ') +
           ' for getting the correct answer!'
       );
-      message.delete();
     }
+    message.delete();
   }
 
   if (

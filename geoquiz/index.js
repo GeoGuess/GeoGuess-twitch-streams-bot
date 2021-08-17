@@ -27,8 +27,16 @@ class GeoQuiz {
     const rightAnswer = await this.database.getRightAnswer();
     const answers = await this.database.getAnswers();
     const userIdWithRightAnswer = [];
+
+    const answersCount = {};
+
     for (const userId in answers) {
       const answer = answers[userId];
+      if (answersCount[answer] === undefined) {
+        answersCount[answer] = 1;
+      } else {
+        answersCount[answer]++;
+      }
       const score = +(rightAnswer === answer);
       if (score > 0) {
         userIdWithRightAnswer.push(userId);
@@ -39,9 +47,18 @@ class GeoQuiz {
         totalScore[userId] += score;
       }
     }
+
+    Object.keys(answersCount).forEach((key, i) => {
+      answersCount[key] =
+        (answersCount[key] / Object.keys(answers).length) * 100;
+    });
+
     this.database.setTotals(totalScore);
     this.database.setQuizActive('');
-    return userIdWithRightAnswer;
+    return {
+      congratUsers: userIdWithRightAnswer,
+      percents: answersCount,
+    };
   }
 
   async getAllScores() {
