@@ -38,7 +38,20 @@ class GeoQuizDataBase {
   }
 
   async addAnswer(userId, answer) {
-    db.ref(`/quiz/${await this.getQuizId()}/answers/${userId}`).set(answer);
+    let nbAnswersCpt = 0;
+    const id = await this.getQuizId();
+    db.ref(`/quiz/${id}/answers/${userId}`).set(answer);
+    await db.ref(`/quiz/${id}/nbAnswers`).transaction((nbAnswers) => {
+      nbAnswersCpt = nbAnswers + 1;
+      return nbAnswersCpt;
+    });
+    return nbAnswersCpt;
+  }
+
+  async getNbAnswers() {
+    return (
+      await db.ref(`/quiz/${await this.getQuizId()}/nbAnswers`).once('value')
+    ).val();
   }
 
   async getAnswers() {

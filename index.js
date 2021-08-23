@@ -290,7 +290,22 @@ discordClient.on('messageReactionAdd', async (reaction, user) => {
       .catch((e) => {
         console.log(e);
       });
-    GeoQuiz.addAnswer(user.id, reaction.emoji.name);
+
+    const nbAnswer = GeoQuiz.addAnswer(user.id, reaction.emoji.name);
+    // if is message from bot
+    if (reaction.message.author.id === reaction.message.guild.me.id) {
+      // edit the message
+      if (reaction.message.content.includes('votes')) {
+        reaction.message.edit(
+          reaction.message.content.replace(
+            /([0-9]+) votes/g,
+            `${nbAnswer} votes`
+          )
+        );
+      } else {
+        reaction.message.edit(reaction.message.content + '\n' + nbAnswer);
+      }
+    }
 
     reaction.users.remove(user).catch((e) => {
       console.log(e);

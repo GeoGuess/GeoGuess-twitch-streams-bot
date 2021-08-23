@@ -1,4 +1,3 @@
-const { writeFile } = require('../filesystem');
 const database = require('./database.js');
 
 class GeoQuiz {
