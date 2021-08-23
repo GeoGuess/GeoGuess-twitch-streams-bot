@@ -220,7 +220,7 @@ discordClient.on('message', async (message) => {
 
       message.channel.send(
         Object.keys(percents)
-          .map((k) => `${k} : ${percents[k]}%`)
+          .map((k) => `${k} : ${percents[k].toFixed(0)}%`)
           .join('\n') +
           '\nCongratulations to ' +
           users.join(', ') +
