@@ -304,7 +304,7 @@ discordClient.on('messageReactionAdd', async (reaction, user) => {
         );
       } else {
         reaction.message.edit(
-          reaction.message.content.replaceAll('undefined', '') +
+          reaction.message.content.split('undefined\n').join('') +
             '\n' +
             nbAnswer +
             ' votes'
