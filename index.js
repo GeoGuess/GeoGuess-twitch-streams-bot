@@ -280,7 +280,6 @@ discordClient.on('messageReactionAdd', async (reaction, user) => {
       return;
     }
   }
-
   if (
     (await GeoQuiz.database.getMessageId()) == reaction.message.id &&
     !reaction.me
@@ -291,29 +290,30 @@ discordClient.on('messageReactionAdd', async (reaction, user) => {
         console.log(e);
       });
 
-    const nbAnswer = GeoQuiz.addAnswer(user.id, reaction.emoji.name);
-    // if is message from bot
-    if (reaction.message.author.id === reaction.message.guild.me.id) {
-      // edit the message
-      if (reaction.message.content.includes('votes')) {
-        reaction.message.edit(
-          reaction.message.content.replace(
-            /([0-9]+) votes/g,
-            `${nbAnswer} votes`
-          )
-        );
-      } else {
-        reaction.message.edit(
-          reaction.message.content.split('undefined\n').join('') +
-            '\n' +
-            nbAnswer +
-            ' votes'
-        );
+    GeoQuiz.addAnswer(user.id, reaction.emoji.name).then((nbAnswer) => {
+      // if is message from bot
+      if (reaction.message.author.id === reaction.message.guild.me.id) {
+        // edit the message
+        if (reaction.message.content.includes('votes')) {
+          reaction.message.edit(
+            reaction.message.content.replace(
+              /([a-z0-9]+) votes/g,
+              `${nbAnswer} votes`
+            )
+          );
+        } else {
+          reaction.message.edit(
+            reaction.message.content.split('undefined\n').join('') +
+              '\n' +
+              nbAnswer +
+              ' votes'
+          );
+        }
       }
-    }
-
-    reaction.users.remove(user).catch((e) => {
-      console.log(e);
     });
+
+    // reaction.users.remove(user).catch((e) => {
+    //   console.log(e);
+    // });
   }
 });
