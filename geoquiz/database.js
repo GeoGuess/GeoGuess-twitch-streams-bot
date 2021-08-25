@@ -45,7 +45,7 @@ class GeoQuizDataBase {
       nbAnswersCpt = nbAnswers + 1;
       return nbAnswersCpt;
     });
-    return nbAnswersCpt;
+    return (await db.ref(`/quiz/${id}/nbAnswers`).once('value')).val();
   }
 
   async getNbAnswers() {

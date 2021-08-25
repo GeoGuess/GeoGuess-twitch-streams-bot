@@ -303,7 +303,12 @@ discordClient.on('messageReactionAdd', async (reaction, user) => {
           )
         );
       } else {
-        reaction.message.edit(reaction.message.content + '\n' + nbAnswer);
+        reaction.message.edit(
+          reaction.message.content.replaceAll('undefined', '') +
+            '\n' +
+            nbAnswer +
+            ' votes'
+        );
       }
     }
 
