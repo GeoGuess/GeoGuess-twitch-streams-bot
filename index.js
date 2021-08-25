@@ -312,8 +312,8 @@ discordClient.on('messageReactionAdd', async (reaction, user) => {
       }
     });
 
-    // reaction.users.remove(user).catch((e) => {
-    //   console.log(e);
-    // });
+    reaction.users.remove(user).catch((e) => {
+      console.log(e);
+    });
   }
 });
