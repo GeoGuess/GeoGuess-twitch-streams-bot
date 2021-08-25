@@ -5,8 +5,8 @@ class GeoQuiz {
     this.database = database;
   }
 
-  addAnswer(userId, answer) {
-    this.database.addAnswer(userId, answer);
+  async addAnswer(userId, answer) {
+    return this.database.addAnswer(userId, answer);
   }
   async startQuestion(messageId) {
     await this.database.setQuizActive('quiz' + messageId);
