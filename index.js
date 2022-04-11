@@ -246,6 +246,7 @@ discordClient.on('message', async (message) => {
     message.content.startsWith('!leaderboard') &&
     message.member.hasPermission('ADMINISTRATOR')
   ) {
+    message.delete();
     let textScore = '**Leaderboard:**\n';
     const totals = await GeoQuiz.getAllScores();
 
@@ -266,7 +267,6 @@ discordClient.on('message', async (message) => {
     }
 
     message.channel.send(textScore);
-    message.delete();
   }
 });
 discordClient.on('messageReactionAdd', async (reaction, user) => {
