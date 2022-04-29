@@ -11,7 +11,7 @@ const Geo = require('./geoquiz');
 const GeoQuiz = new Geo();
 class DiscordChannel {
   constructor(id) {
-    this.id = id;
+    this.id = id;!
   }
   send(msg) {
     return new Promise((resolve, reject) => {
@@ -211,6 +211,7 @@ discordClient.on('message', async (message) => {
     message.content.startsWith('!end') &&
     message.member.hasPermission('ADMINISTRATOR')
   ) {
+    message.delete();
     const { congratUsers, percents } = await GeoQuiz.endQuestion();
 
     console.log('GeoQuiz.endQuestion');
@@ -227,7 +228,9 @@ discordClient.on('message', async (message) => {
           ' for getting the correct answer!'
       );
     }
-    message.delete();
+    
+    logChannel
+      .send('!leaderboard')
   }
 
   if (
