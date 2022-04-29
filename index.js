@@ -11,7 +11,7 @@ const Geo = require('./geoquiz');
 const GeoQuiz = new Geo();
 class DiscordChannel {
   constructor(id) {
-    this.id = id;!
+    this.id = id;
   }
   send(msg) {
     return new Promise((resolve, reject) => {
