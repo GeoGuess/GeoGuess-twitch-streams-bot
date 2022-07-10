@@ -64,6 +64,13 @@ async function getUsers(ids, message) {
   return promises.filter((user) => user !== null);
 }
 
+async function getUser(message, userId){
+  if (message.channel.guild.members.cache.has(userId)) {
+    return message.channel.guild.members.cache.get(userId);
+  }
+  return await message.channel.guild.members.fetch(userId);
+}
+
 setTimeout(() => {
   console.log('Logging in to discord...');
   discordClient
@@ -128,6 +135,7 @@ function toWeirdCase(pattern, str) {
     )
     .join('');
 }
+
 discordClient.on('message', async (message) => {
   let streamCommandRegex = /^(\.|!)streams$/i;
   let streamNotCased = /^(\.|!)streams$/;
@@ -255,12 +263,7 @@ discordClient.on('message', async (message) => {
 
     for (const { userId, score } of totals) {
       try {
-        let user;
-        if (message.channel.guild.members.cache.has(userId)) {
-          user = message.channel.guild.members.cache.get(userId);
-        } else {
-          user = await message.channel.guild.members.fetch(userId);
-        }
+        const user = await getUser(message, userId);
         if (user) {
           textScore = textScore + `@${user.displayName} - ${score}\n`;
         }
@@ -270,6 +273,34 @@ discordClient.on('message', async (message) => {
     }
 
     message.channel.send(textScore);
+  }
+
+  if (
+    message.content.startsWith('!getImage') &&
+    message.member.hasPermission('ADMINISTRATOR')
+  ) {
+    const winnersByPodium = await GeoQuiz.getWinners();
+
+    const winners = await Promise.all(winnersByPodium.map(async (usersId)=>{
+      return await Promise.all(usersId.map(async (userId)=>{
+        const user = await getUser(message, userId);
+        return {
+          name: user.displayName,
+          avatarUrl: user.user.displayAvatarURL(),
+        }
+      }))
+    }))
+    message.channel.send(
+      JSON.stringify({
+        title: 'End Quiz',
+        firsts: winners[0],
+        seconds: winners[1],
+        thirds: winners[2],
+      })
+    )
+
+
+
   }
 });
 discordClient.on('messageReactionAdd', async (reaction, user) => {

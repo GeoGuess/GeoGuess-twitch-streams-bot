@@ -71,6 +71,33 @@ class GeoQuiz {
     }
     return scores;
   }
+
+  async getWinners() {
+    const totalScore = await this.database.getTotals();
+    const sortedScores = Object.keys(totalScore).sort(
+      (a, b) => totalScore[b] - totalScore[a]
+    );
+    const winners = [[], [], []];
+    let i = 0;
+    let lastScore;
+    for (const userId of sortedScores) {
+      if (!lastScore) {
+        lastScore = totalScore[userId];
+      }
+      if (lastScore != totalScore[userId]) {
+        lastScore = totalScore[userId];
+        i++;
+        if(i>2){
+          return winners;
+        }
+      }
+      winners[i].push(userId)
+    }
+
+  }
+
+
+
 }
 
 module.exports = GeoQuiz;
